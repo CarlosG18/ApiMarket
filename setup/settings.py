@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'Apps.market.apps.MarketConfig',
     'Apps.users.apps.UsersConfig',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'core/static/img/')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# DRF
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Spectacular settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'API Market',
+    'DESCRIPTION': 'Api para gerenciamento de um mercado',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
