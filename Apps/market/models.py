@@ -1,6 +1,7 @@
 from django.db import models
 import uuid
 from datetime import datetime
+from django.utils.timezone import now
 
 class PayMethod(models.Model):
     """
@@ -75,9 +76,9 @@ class BuyList(models.Model):
     """
         model for create buy list client's
     """
-    products = models.ManyToManyField(Product, on_delete=models.CASCADE)
+    products = models.ManyToManyField(Product)
     #client = models.ForeignKey(client, on_delete=models.CASCADE)
-    day_buy = models.DateTimeField(default=datetime.now())
+    day_buy = models.DateTimeField(default=now)
     #operator = models.ForeignKey(Operator, on_delete=models.CASCADE)
     amount_total = models.IntegerField()
     discount = models.IntegerField()# value in % of amount total
