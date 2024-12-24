@@ -1,15 +1,5 @@
 from rest_framework import serializers
-from .models import PayMethod, Provider, Product, Category, Stock, Buy, BuyList
-
-class PayMethodSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PayMethod
-        fields = '__all__'
-
-class ProviderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Provider
-        fields = '__all__'
+from .models import Product, Category, Stock, Buy, BuyList
         
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:

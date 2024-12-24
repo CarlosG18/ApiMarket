@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from Apps.market.views import ProductViewSet, PayMethodViewSet, ProviderViewSet, CategoryViewSet, StockViewSet, BuyListViewSet, BuyViewSet
+from Apps.market.views import ProductViewSet, CategoryViewSet, StockViewSet, BuyListViewSet, BuyViewSet
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -14,10 +14,10 @@ urlpatterns = [
     path('buys/', BuyViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('products/<int:id>/', ProductViewSet.as_view({'get': 'list', 'delete': 'destroy'})),
     path('products/', ProductViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('paymethods/<int:id>/', PayMethodViewSet.as_view({'get': 'list', 'delete': 'destroy'})),
-    path('paymethods/', PayMethodViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('providers/<int:id>/', ProviderViewSet.as_view({'get': 'list', 'delete': 'destroy'})),
-    path('providers/', ProviderViewSet.as_view({'get': 'list', 'post': 'create'})),
+    #path('paymethods/<int:id>/', PayMethodViewSet.as_view({'get': 'list', 'delete': 'destroy'})),
+    #path('paymethods/', PayMethodViewSet.as_view({'get': 'list', 'post': 'create'})),
+    #path('providers/<int:id>/', ProviderViewSet.as_view({'get': 'list', 'delete': 'destroy'})),
+    #path('providers/', ProviderViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('categorys/<int:id>/', CategoryViewSet.as_view({'get': 'list', 'delete': 'destroy'})),
     path('categorys/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'})),
     # url para o estoque

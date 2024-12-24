@@ -1,29 +1,8 @@
 from django.db import models
 import uuid
-from datetime import datetime
 from django.utils.timezone import now
+from Apps.users.models import Provider, Client, Operator
 
-class PayMethod(models.Model):
-    """
-        model for create the pay method used for provider
-    """
-    name = models.CharField(max_length=200)
-    is_digital = models.BooleanField(default=False)
-
-    def __str__(self):
-        return super().__str__()
-    
-class Provider(models.Model):
-    """
-        model for create the provider
-    """
-    name = models.CharField(max_length=200)
-    cnpj = models.CharField(max_length=14)
-    paymethod = models.ForeignKey(PayMethod, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return super().__str__()
-    
 class Category(models.Model):
     """
         model for create the category of products
@@ -77,9 +56,9 @@ class BuyList(models.Model):
         model for create buy list client's
     """
     products = models.ManyToManyField(Product)
-    #client = models.ForeignKey(client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
     day_buy = models.DateTimeField(default=now)
-    #operator = models.ForeignKey(Operator, on_delete=models.CASCADE)
+    operator = models.ForeignKey(Operator, on_delete=models.CASCADE)
     amount_total = models.IntegerField()
     discount = models.IntegerField()# value in % of amount total
     
