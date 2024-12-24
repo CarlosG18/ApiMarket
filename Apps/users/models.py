@@ -71,7 +71,7 @@ class Employee(models.Model):
         Basic model for types of employee
     """ 
     salario = models.DecimalField(max_digits=10, decimal_places=2)
-    work_day = models.ForeignKey(WorkDay, on_delete=models.CASCADE)
+    work_day = models.ForeignKey(WorkDay, on_delete=models.CASCADE, blank=True, null=True)
     hours_worked = models.DecimalField(max_digits=10, decimal_places=2)
 
 class PayMethod(models.Model):
