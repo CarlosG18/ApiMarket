@@ -1,7 +1,25 @@
-from .models import Gerente, Operator, Provider, Point, WorkDay, PayMethod, Role, Admin, User, Employee
+from .models import Gerente, Operator, Provider, Point, WorkDay, PayMethod, Role, Admin, User, Employee, Batida
 from rest_framework import serializers
 from decimal import Decimal
+import re
 
+class BatidaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Batida
+        fields = ['id', 'point', 'type_batida', 'time']
+        read_only_fields = ['type_batida']
+
+    def validate_time(self, value):
+        """Ensure the time is valid."""
+        horas = value.hour
+        minutos = value.minute
+        
+        print(horas)
+        print(minutos)
+
+        if value < 0 or value > 24:
+            raise serializers.ValidationError("Invalid time.")
+        return value
 
 class ProviderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,12 +34,35 @@ class PayMethodSerializer(serializers.ModelSerializer):
 class PointSerializer(serializers.ModelSerializer):
     class Meta:
         model = Point
-        fields = '__all__'
+        fields = ['id', 'employee', 'day', 'is_closed']
+        read_only_fields = ['is_closed']
 
 class WorkDaySerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkDay
         fields = '__all__'
+
+    def validate(self, attrs):
+        # verificar se o horario de trabalho é valido
+        work_hours_initial = attrs['work_hours_initial']
+        work_hours_final = attrs['work_hours_final']
+
+        # Verificar se os horários são válidos
+        if work_hours_initial >= work_hours_final:
+            raise serializers.ValidationError("O horário inicial deve ser menor que o horário final.")
+        
+        # Calcular a duração da jornada de trabalho
+        hours_total_initial = work_hours_initial.hour + work_hours_initial.minute / 60
+        hours_total_final = work_hours_final.hour + work_hours_final.minute / 60
+
+        jornada_trabalho = hours_total_final - hours_total_initial
+
+        if jornada_trabalho > 8.0:
+            raise serializers.ValidationError("A jornada de trabalho não pode exceder 8 horas.")
+        if jornada_trabalho < 4.0:
+            raise serializers.ValidationError("A jornada de trabalho deve ter no mínimo 4 horas.")
+
+        return attrs
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:

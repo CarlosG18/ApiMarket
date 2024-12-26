@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from Apps.market.views import ProductViewSet, CategoryViewSet, StockViewSet, BuyListViewSet, BuyViewSet
+from Apps.users.views import PointViewSet, WorkDayViewSet, BatidaViewSet
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -33,4 +34,12 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('users/', include('Apps.users.urls')),
+    #sistema de pontos
+    path('point/workdays/', WorkDayViewSet.as_view({'post': 'create'}), name='workdays_by_employee'),
+    path('point/workdays/<int:id>/', WorkDayViewSet.as_view({'delete': 'destroy'}), name='workdays_delete'),
+    path('point/workdays/employee/<int:employee_id>/', WorkDayViewSet.as_view({'get': 'list'})),
+    path('point/batida/', BatidaViewSet.as_view({'post': 'create'})),
+    path('point/batida/<int:id>/', BatidaViewSet.as_view({'delete': 'destroy'})),
+    path('point/employee/<int:employee_id>/', PointViewSet.as_view({'get': 'list'})),
+    path('point/', PointViewSet.as_view({'post': 'create'})),
 ]
