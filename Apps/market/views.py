@@ -12,12 +12,51 @@ class BuyViewSet(viewsets.ModelViewSet):
     queryset = Buy.objects.all()
     serializer_class = BuySerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        product = Product.objects.get(id=request.data['product'])
+
+        if serializer.is_valid():
+            price = product.price * request.data['amount']
+            serializer.save(price=price)
+            # atualizar o estoque
+            stock = Stock.objects.get(product=product)
+            stock.amount_current -= request.data['amount']
+            stock.save()
+            # atualizar a buylist
+            buylist = BuyList.objects.get(id=request.data['buylist'])
+            buylist.amount_total += price
+            buylist.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class BuyListViewSet(viewsets.ModelViewSet):
     """
     
     """
     queryset = BuyList.objects.all()
     serializer_class = BuyListSerializer
+
+    def list_products(self, request, *args, **kwargs):
+        buylist = BuyList.objects.get(id=kwargs['id'])
+        buys = Buy.objects.filter(buylist=buylist)
+        products = [buy.product for buy in buys]
+
+        data_response = {}
+        for product, number in enumerate(set(products)):
+            data_response[f'produto{number}'] = {
+                'produto': product,
+                'quantidade': 0,
+            }
+            for p in products:
+                if p == data_response[f'produto{number}']:
+                    data_response['quantidade'] += 1
+                    
+            
+        print(data_response)
+        
+        return Response(data_response, status=status.HTTP_200_OK)
 
 class ProductViewSet(viewsets.ModelViewSet):
     """

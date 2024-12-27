@@ -57,28 +57,30 @@ class Alerts(models.Model):
     def __str__(self):
         return super().__str__()
 
-class Buy(models.Model):
-    """
-        model for create of a buy do on client
-    """
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    amount = models.IntegerField()
-    price = models.FloatField()
-    
-    def __str__(self):
-        return super().__str__()
-    
+
 class BuyList(models.Model):
     """
         model for create buy list client's
     """
-    products = models.ManyToManyField(Product)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     day_buy = models.DateTimeField(default=now)
     operator = models.ForeignKey(Operator, on_delete=models.CASCADE)
-    amount_total = models.IntegerField()
-    discount = models.IntegerField()# value in % of amount total
+    amount_total = models.IntegerField(default=0)
+    discount = models.IntegerField(default=0)# value in % of amount total
     
     def __str__(self):
         return super().__str__()
+
+class Buy(models.Model):
+    """
+        model for create of a buy do on client
+    """
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="produtos")
+    amount = models.IntegerField()
+    price = models.FloatField()
+    buylist = models.ForeignKey(BuyList, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return super().__str__()
+    
     

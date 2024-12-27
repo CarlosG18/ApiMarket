@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('buylists/<int:id>/', BuyListViewSet.as_view({'get': 'list', 'delete': 'destroy'})),
+    path('buylists/<int:id>/products/', BuyListViewSet.as_view({'get': 'list_products'})),
     path('buylists/', BuyListViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('buys/<int:id>/', BuyViewSet.as_view({'get': 'list', 'delete': 'destroy'})),
     path('buys/', BuyViewSet.as_view({'get': 'list', 'post': 'create'})),

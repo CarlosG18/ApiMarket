@@ -132,7 +132,7 @@ class OperatorSerializer(serializers.ModelSerializer):
         user.save()
 
         # Crie Gerente
-        operator = Gerente.objects.create(user=user, **validated_data)
+        operator = Operator.objects.create(user=user, **validated_data)
 
         # Atribua o papel de Gerente
         role, created = Role.objects.get_or_create(
