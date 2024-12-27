@@ -20,6 +20,7 @@ class Product(models.Model):
     """
     name = models.CharField(max_length=200)
     code = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    mark = models.CharField(max_length=200)
     description = models.TextField()
     price = models.FloatField()
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
@@ -34,12 +35,28 @@ class Stock(models.Model):
     """
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     amount_current = models.IntegerField()
-    amount_min = models.IntegerField()
-    amount_max = models.IntegerField()
+    amount_min = models.IntegerField(blank=True)
+    amount_max = models.IntegerField(blank=True)
     
     def __str__(self):
         return super().__str__()
     
+class Alerts(models.Model):
+    """
+        model for create alerts for stock
+    """
+    TYPE_ALERT = [
+        ('1', 'falta'),
+        ('2', 'excesso'),
+    ]
+
+    stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    alert_type = models.CharField(max_length=1, choices=TYPE_ALERT)
+    message = models.TextField()
+    
+    def __str__(self):
+        return super().__str__()
+
 class Buy(models.Model):
     """
         model for create of a buy do on client
