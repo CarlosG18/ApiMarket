@@ -39,7 +39,9 @@ urlpatterns = [
     path('point/workdays/<int:id>/', WorkDayViewSet.as_view({'delete': 'destroy'}), name='workdays_delete'),
     path('point/workdays/employee/<int:employee_id>/', WorkDayViewSet.as_view({'get': 'list'})),
     path('point/batida/', BatidaViewSet.as_view({'post': 'create'})),
-    path('point/batida/<int:id>/', BatidaViewSet.as_view({'delete': 'destroy'})),
+    path('point/<int:id>/batida/', PointViewSet.as_view({'get': 'list_batidas_of_point'})),
+    path('point/batida/<int:id>/', BatidaViewSet.as_view({'delete': 'destroy', 'patch':'update'})),
     path('point/employee/<int:employee_id>/', PointViewSet.as_view({'get': 'list'})),
-    path('point/', PointViewSet.as_view({'post': 'create'})),
+    path('point/', PointViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('point/<int:id>/', PointViewSet.as_view({'delete': 'destroy', 'patch': 'update'}))
 ]

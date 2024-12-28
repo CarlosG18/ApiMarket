@@ -64,6 +64,7 @@ class Employee(models.Model):
     """ 
     salario = models.DecimalField(max_digits=10, decimal_places=2)
     hours_worked = models.DecimalField(max_digits=10, decimal_places=2)
+    days_worked = models.IntegerField()
 
 class WorkDay(models.Model):
     """

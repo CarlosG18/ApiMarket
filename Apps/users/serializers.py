@@ -1,6 +1,7 @@
 from .models import Gerente, Operator, Provider, Point, WorkDay, PayMethod, Role, Admin, User, Employee, Batida
 from rest_framework import serializers
-from decimal import Decimal
+from django.utils import timezone
+from datetime import datetime
 import re
 
 class BatidaSerializer(serializers.ModelSerializer):
@@ -8,18 +9,6 @@ class BatidaSerializer(serializers.ModelSerializer):
         model = Batida
         fields = ['id', 'point', 'type_batida', 'time']
         read_only_fields = ['type_batida']
-
-    def validate_time(self, value):
-        """Ensure the time is valid."""
-        horas = value.hour
-        minutos = value.minute
-        
-        print(horas)
-        print(minutos)
-
-        if value < 0 or value > 24:
-            raise serializers.ValidationError("Invalid time.")
-        return value
 
 class ProviderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,6 +25,19 @@ class PointSerializer(serializers.ModelSerializer):
         model = Point
         fields = ['id', 'employee', 'day', 'is_closed']
         read_only_fields = ['is_closed']
+
+    def validate_day(self, value):
+        # verificar se o dia não está no passado ou no futuro    
+        if value < datetime.now().date():
+            raise serializers.ValidationError("O dia não pode ser no passado.")
+        #if value > timezone.now().date():
+           #raise serializers.ValidationError("O dia não pode ser no futuro.")
+        
+        # verificar se não existe um ponto para o dia
+        if Point.objects.filter(day=value).exists():
+            raise serializers.ValidationError("Já existe um ponto para este dia.")
+        
+        return value
 
 class WorkDaySerializer(serializers.ModelSerializer):
     class Meta:
