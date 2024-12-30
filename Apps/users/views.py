@@ -1,12 +1,27 @@
 from rest_framework import viewsets
-from .serializers import PayMethodSerializer, GerenteSerializer, OperatorSerializer, ProviderSerializer, PointSerializer, WorkDaySerializer, BatidaSerializer
-from .models import PayMethod, Gerente, Operator, Provider, Point, WorkDay, Batida
+from .serializers import PayMethodSerializer, GerenteSerializer, OperatorSerializer, ProviderSerializer, PointSerializer, WorkDaySerializer, BatidaSerializer, ClientSerializer, EmployeeSerializer
+from .models import PayMethod, Gerente, Operator, Provider, Point, WorkDay, Batida, Client, Employee
 from .permissions import IsRoleUser
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
 # Create your views here.
+class ClientViewSet(viewsets.ModelViewSet):
+    """
+    
+    """
+    queryset = Client.objects.all()
+    serializer_class = ClientSerializer
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    """
+    
+    """
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+
+
 class PayMethodViewSet(viewsets.ModelViewSet):
     """
     

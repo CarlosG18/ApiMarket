@@ -1,8 +1,18 @@
-from .models import Gerente, Operator, Provider, Point, WorkDay, PayMethod, Role, Admin, User, Employee, Batida
+from .models import Gerente, Operator, Provider, Point, WorkDay, PayMethod, Role, Admin, User, Employee, Batida, Client
 from rest_framework import serializers
 from django.utils import timezone
 from datetime import datetime
 import re
+
+class ClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        fields = '__all__'
+
+class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = '__all__'
 
 class BatidaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -175,7 +185,7 @@ class OperatorSerializer(serializers.ModelSerializer):
         user.save()
 
         # Crie Gerente
-        operator = Gerente.objects.create(user=user, **validated_data)
+        operator = Operator.objects.create(user=user, **validated_data)
 
         # Atribua o papel de Gerente
         role, created = Role.objects.get_or_create(
