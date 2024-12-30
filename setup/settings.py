@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'Apps.users.apps.UsersConfig',
     'drf_spectacular',
     'rest_framework_simplejwt',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

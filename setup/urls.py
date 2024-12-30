@@ -11,6 +11,7 @@ urlpatterns = [
     path('buylists/<int:id>/', BuyListViewSet.as_view({'get': 'list', 'delete': 'destroy'})),
     path('buylists/<int:id>/products/', BuyListViewSet.as_view({'get': 'list_products'})),
     path('buylists/', BuyListViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('buylists/client/<int:id>/', BuyListViewSet.as_view({'get': 'list_buylist_client'})),
     path('buys/<int:id>/', BuyViewSet.as_view({'get': 'list', 'delete': 'destroy'})),
     path('buys/', BuyViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('products/<int:id>/', ProductViewSet.as_view({'get': 'list', 'delete': 'destroy'})),

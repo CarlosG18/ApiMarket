@@ -1,8 +1,23 @@
 from rest_framework import viewsets
-from .serializers import PayMethodSerializer, GerenteSerializer, OperatorSerializer, ProviderSerializer, PointSerializer, WorkDaySerializer
-from .models import PayMethod, Gerente, Operator, Provider, Point, WorkDay
+from .serializers import PayMethodSerializer, GerenteSerializer, OperatorSerializer, ProviderSerializer, PointSerializer, WorkDaySerializer, ClientSerializer, EmployeeSerializer
+from .models import PayMethod, Gerente, Operator, Provider, Point, WorkDay, Client, Employee
 
 # Create your views here.
+class ClientViewSet(viewsets.ModelViewSet):
+    """
+    
+    """
+    queryset = Client.objects.all()
+    serializer_class = ClientSerializer
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    """
+    
+    """
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+
+
 class PayMethodViewSet(viewsets.ModelViewSet):
     """
     

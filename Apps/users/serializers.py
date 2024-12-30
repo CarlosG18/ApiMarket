@@ -1,7 +1,16 @@
-from .models import Gerente, Operator, Provider, Point, WorkDay, PayMethod, Role, Admin, User, Employee
+from .models import Gerente, Operator, Provider, Point, WorkDay, PayMethod, Role, Admin, User, Employee, Client
 from rest_framework import serializers
 from decimal import Decimal
 
+class ClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        fields = '__all__'
+
+class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = '__all__'
 
 class ProviderSerializer(serializers.ModelSerializer):
     class Meta:
