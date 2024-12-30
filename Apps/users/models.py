@@ -58,21 +58,32 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.first_name
     
-class WorkDay(models.Model):
-    """
-        Basic model for work days
-    """
-    day = models.DateField()
-    work_hours_initial = models.TimeField()
-    work_hours_final = models.TimeField()
-
 class Employee(models.Model):
     """
         Basic model for types of employee
     """ 
     salario = models.DecimalField(max_digits=10, decimal_places=2)
-    work_day = models.ForeignKey(WorkDay, on_delete=models.CASCADE, blank=True, null=True)
     hours_worked = models.DecimalField(max_digits=10, decimal_places=2)
+    days_worked = models.IntegerField()
+
+class WorkDay(models.Model):
+    """
+        Basic model for work days
+    """
+    CHOICE_DAYS = {
+        1: "domingo",
+        2: "segunda",
+        3: "terça",
+        4: "quarta",
+        5: "quinta",
+        6: "sexta",
+        7: "sabado",
+    }
+
+    day = models.IntegerField(choices=CHOICE_DAYS)
+    work_hours_initial = models.TimeField()
+    work_hours_final = models.TimeField()
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='workdays')
 
 class PayMethod(models.Model):
     """
@@ -105,12 +116,21 @@ class Client(models.Model):
     telefone = models.CharField(max_length=50)
 
 class Point(models.Model):
-    STATUS_CHOICES = (
+    """
+        model for create the point of the employee
+    """
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='employee')
+    day = models.DateField()
+    batida_entry = models.BooleanField(default=False)
+    batida_exit = models.BooleanField(default=False)
+    is_closed = models.BooleanField(default=False)
+
+class Batida(models.Model):
+    TYPE_CHOICE = (
         ('E', 'Entrada'),
         ('S', 'Saida'),
     )
 
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    day = models.DateField()
-    time = models.DateTimeField()
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES)
+    time = models.TimeField()
+    type_batida = models.CharField(max_length=1, choices=TYPE_CHOICE, default='E')
+    point = models.ForeignKey('Point', on_delete=models.CASCADE)

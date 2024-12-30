@@ -1,6 +1,8 @@
-from .models import Gerente, Operator, Provider, Point, WorkDay, PayMethod, Role, Admin, User, Employee, Client
+from .models import Gerente, Operator, Provider, Point, WorkDay, PayMethod, Role, Admin, User, Employee, Batida, Client
 from rest_framework import serializers
-from decimal import Decimal
+from django.utils import timezone
+from datetime import datetime
+import re
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,6 +13,12 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = '__all__'
+
+class BatidaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Batida
+        fields = ['id', 'point', 'type_batida', 'time']
+        read_only_fields = ['type_batida']
 
 class ProviderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,12 +33,48 @@ class PayMethodSerializer(serializers.ModelSerializer):
 class PointSerializer(serializers.ModelSerializer):
     class Meta:
         model = Point
-        fields = '__all__'
+        fields = ['id', 'employee', 'day', 'is_closed']
+        read_only_fields = ['is_closed']
+
+    def validate_day(self, value):
+        # verificar se o dia não está no passado ou no futuro    
+        if value < datetime.now().date():
+            raise serializers.ValidationError("O dia não pode ser no passado.")
+        #if value > timezone.now().date():
+           #raise serializers.ValidationError("O dia não pode ser no futuro.")
+        
+        # verificar se não existe um ponto para o dia
+        if Point.objects.filter(day=value).exists():
+            raise serializers.ValidationError("Já existe um ponto para este dia.")
+        
+        return value
 
 class WorkDaySerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkDay
         fields = '__all__'
+
+    def validate(self, attrs):
+        # verificar se o horario de trabalho é valido
+        work_hours_initial = attrs['work_hours_initial']
+        work_hours_final = attrs['work_hours_final']
+
+        # Verificar se os horários são válidos
+        if work_hours_initial >= work_hours_final:
+            raise serializers.ValidationError("O horário inicial deve ser menor que o horário final.")
+        
+        # Calcular a duração da jornada de trabalho
+        hours_total_initial = work_hours_initial.hour + work_hours_initial.minute / 60
+        hours_total_final = work_hours_final.hour + work_hours_final.minute / 60
+
+        jornada_trabalho = hours_total_final - hours_total_initial
+
+        if jornada_trabalho > 8.0:
+            raise serializers.ValidationError("A jornada de trabalho não pode exceder 8 horas.")
+        if jornada_trabalho < 4.0:
+            raise serializers.ValidationError("A jornada de trabalho deve ter no mínimo 4 horas.")
+
+        return attrs
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,5 +1,5 @@
-from rest_framework import routers
-from .views import PayMethodViewSet, GerenteViewSet, OperatorViewSet, ProviderViewSet, PointViewSet, WorkDayViewSet, EmployeeViewSet, ClientViewSet
+from .views import PayMethodViewSet, GerenteViewSet, OperatorViewSet, ProviderViewSet, PointViewSet, WorkDayViewSet, BatidaViewSet, EmployeeViewSet, ClientViewSet
+from django.urls import path
 
 router = routers.DefaultRouter()
 router.register(r'paymethods', PayMethodViewSet, basename="patmethods")
