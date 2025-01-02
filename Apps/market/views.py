@@ -15,6 +15,8 @@ class BuyViewSet(viewsets.ModelViewSet):
     """
     queryset = Buy.objects.all()
     serializer_class = BuySerializer
+    required_roles = ['operator', 'Admin']
+    permission_classes = [IsRoleUser]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
