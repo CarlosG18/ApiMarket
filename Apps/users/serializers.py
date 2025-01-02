@@ -4,6 +4,10 @@ from django.utils import timezone
 from datetime import datetime
 import re
 
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['id', 'nome', 'descricao']
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
@@ -21,9 +25,45 @@ class BatidaSerializer(serializers.ModelSerializer):
         read_only_fields = ['type_batida']
 
 class ProviderSerializer(serializers.ModelSerializer):
+    roles = RoleSerializer(many=True, read_only=True)
+    first_name = serializers.CharField(source='user.first_name', required=True)
+    last_name = serializers.CharField(source='user.last_name', required=True)
+    email = serializers.EmailField(source='user.email', required=True)
+    password = serializers.CharField(write_only=True, required=True)
+
     class Meta:
         model = Provider
-        fields = '__all__'
+        fields = [
+            'id', 'first_name', 'last_name', 'email', 'password', 'roles', 'cnpj', 'paymethod'
+        ]
+        read_only_fields = ['id']
+
+    def validate_email(self, value):
+        """Ensure the email is unique among Admins."""
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value
+
+    def create(self, validated_data):
+        """Create a new Admin instance with a related User."""
+        user_data = validated_data.pop('user')  # Dados vindos do source='user.*'
+        password = validated_data.pop('password')  # Campo diretamente no serializer
+
+        # Crie o objeto User
+        user = User.objects.create(
+            first_name=user_data['first_name'],
+            last_name=user_data['last_name'],
+            email=user_data['email'],
+        )
+        user.set_password(password)
+        user.save()
+            
+        provider = Provider.objects.create(user=user, **validated_data)
+
+        role, created = Role.objects.get_or_create(nome='Provider', defaults={'descricao': 'Provider role'})
+        user.roles.add(role)
+        
+        return provider
 
 class PayMethodSerializer(serializers.ModelSerializer):
     class Meta:
@@ -75,11 +115,6 @@ class WorkDaySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A jornada de trabalho deve ter no mínimo 4 horas.")
 
         return attrs
-
-class RoleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Role
-        fields = ['id', 'nome', 'descricao']
 
 class AdminSerializer(serializers.ModelSerializer):
     roles = RoleSerializer(many=True, read_only=True)

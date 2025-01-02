@@ -64,7 +64,7 @@ class Employee(models.Model):
     """ 
     salario = models.DecimalField(max_digits=10, decimal_places=2)
     hours_worked = models.DecimalField(max_digits=10, decimal_places=2)
-    days_worked = models.IntegerField()
+    days_worked = models.IntegerField(default=0)
 
 class WorkDay(models.Model):
     """
@@ -96,9 +96,9 @@ class PayMethod(models.Model):
         return super().__str__()
 
 class Provider(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='provider_user')
     cnpj = models.CharField(max_length=14)
     paymethod = models.ForeignKey(PayMethod, on_delete=models.CASCADE)
-    models.OneToOneField(User, on_delete=models.CASCADE, related_name='provider_user')
 
 class Admin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_user')
