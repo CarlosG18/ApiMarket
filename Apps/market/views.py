@@ -45,6 +45,8 @@ class BuyListViewSet(viewsets.ModelViewSet):
     serializer_class = BuyListSerializer
     filter_backends = (DjangoFilterBackend,filters.OrderingFilter)
     ordering_fields = ('client', 'data_buy')
+    required_roles = ['operator', 'Admin']
+    permission_classes = [IsRoleUser]
 
     def list_products(self, request, *args, **kwargs):
         buylist = BuyList.objects.get(id=kwargs['id'])
@@ -90,6 +92,8 @@ class StockViewSet(viewsets.ModelViewSet):
     """
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
+    required_roles = ['Gerente', 'Admin']
+    permission_classes = [IsRoleUser]
     http_method_names = ['get', 'post', 'delete', 'patch']
 
     def list_estoque_product(self, request, *args, **kwargs):
@@ -157,3 +161,5 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    required_roles = ['Provider', 'Admin']
+    permission_classes = [IsRoleUser]

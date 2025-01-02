@@ -20,6 +20,8 @@ class ClientViewSet(viewsets.ModelViewSet):
     """
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
+    required_roles = ['Admin', 'Gerente','Operator']
+    permission_classes = [IsRoleUser]
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     """
@@ -27,7 +29,8 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     """
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
-
+    required_roles = ['Admin']
+    permission_classes = [IsRoleUser]
 
 class PayMethodViewSet(viewsets.ModelViewSet):
     """
@@ -35,6 +38,8 @@ class PayMethodViewSet(viewsets.ModelViewSet):
     """
     queryset = PayMethod.objects.all()
     serializer_class = PayMethodSerializer
+    required_roles = ['Provider', 'Admin']
+    permission_classes = [IsRoleUser]
 
 class GerenteViewSet(viewsets.ModelViewSet):
     """
@@ -42,6 +47,8 @@ class GerenteViewSet(viewsets.ModelViewSet):
     """
     queryset = Gerente.objects.all()
     serializer_class = GerenteSerializer
+    required_roles = ['Admin']
+    permission_classes = [IsRoleUser]
 
 class OperatorViewSet(viewsets.ModelViewSet):
     """
@@ -49,6 +56,8 @@ class OperatorViewSet(viewsets.ModelViewSet):
     """
     queryset = Operator.objects.all()
     serializer_class = OperatorSerializer
+    required_roles = ['Admin']
+    permission_classes = [IsRoleUser]
 
 class ProviderViewSet(viewsets.ModelViewSet):
     """
@@ -56,6 +65,8 @@ class ProviderViewSet(viewsets.ModelViewSet):
     """
     queryset = Provider.objects.all()
     serializer_class = ProviderSerializer
+    required_roles = ['Admin']
+    permission_classes = [IsRoleUser]
 
 class PointViewSet(viewsets.ModelViewSet):
     """
