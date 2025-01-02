@@ -4,12 +4,11 @@ from django.utils import timezone
 from datetime import datetime
 import re
 
-<<<<<<< HEAD
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = ['id', 'nome', 'descricao']
-=======
+
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
@@ -19,7 +18,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = '__all__'
->>>>>>> eea9e0b2865b674756b1b6fcd2a7cb70d911491b
 
 class BatidaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -49,23 +47,22 @@ class ProviderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create a new Admin instance with a related User."""
-        user_data = {
-            'first_name': validated_data["user"].pop('first_name'),
-            'last_name': validated_data["user"].pop('last_name'),
-            'email': validated_data["user"].pop('email'),
-            'password': validated_data.pop('password')
-        }
-        
-        user = User.objects.create(**user_data)
-        user.set_password(user_data['password'])
-        
+        user_data = validated_data.pop('user')  # Dados vindos do source='user.*'
+        password = validated_data.pop('password')  # Campo diretamente no serializer
+
+        # Crie o objeto User
+        user = User.objects.create(
+            first_name=user_data['first_name'],
+            last_name=user_data['last_name'],
+            email=user_data['email'],
+        )
+        user.set_password(password)
+        user.save()
+            
         provider = Provider.objects.create(user=user, **validated_data)
 
         role, created = Role.objects.get_or_create(nome='Provider', defaults={'descricao': 'Provider role'})
         user.roles.add(role)
-
-        user.save()
-        provider.save()
         
         return provider
 

@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from Apps.users.permissions import IsRoleUser
 
 class BuyViewSet(viewsets.ModelViewSet):
     """
@@ -75,6 +76,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    required_roles = ['Provider', 'Admin']
+    permission_classes = [IsRoleUser]
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
