@@ -99,7 +99,7 @@ class Provider(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='provider_user')
     cnpj = models.CharField(max_length=14)
     paymethod = models.ForeignKey(PayMethod, on_delete=models.CASCADE)
-
+;
 class Admin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_user')
 

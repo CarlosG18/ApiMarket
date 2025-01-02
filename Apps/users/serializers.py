@@ -8,6 +8,7 @@ class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = ['id', 'nome', 'descricao']
+
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client

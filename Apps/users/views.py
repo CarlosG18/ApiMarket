@@ -63,9 +63,8 @@ class PointViewSet(viewsets.ModelViewSet):
     """
     queryset = Point.objects.all()
     serializer_class = PointSerializer
-    #requer_roles = ['Gerente', 'Operator']
-    #permission_classes = [IsRoleUser]
-    permission_classes = [permissions.AllowAny]
+    required_roles = ['Gerente', 'Operator']
+    permission_classes = [IsRoleUser]
     lookup_field = 'id'
 
     def list_batidas_of_point(self, request, *args, **kwargs):
@@ -117,6 +116,8 @@ class BatidaViewSet(viewsets.ModelViewSet):
     """
     queryset = Batida.objects.all()
     serializer_class = BatidaSerializer
+    required_roles = ['Gerente', 'Operator']
+    permission_classes = [IsRoleUser]
     lookup_field = 'id'
 
     def create(self, request, *args, **kwargs):
@@ -207,6 +208,8 @@ class WorkDayViewSet(viewsets.ModelViewSet):
     """
     queryset = WorkDay.objects.all()
     serializer_class = WorkDaySerializer
+    required_roles = ['Gerente', 'Operator']
+    permission_classes = [IsRoleUser]
     lookup_field = 'id'
 
     def create(self, request, *args, **kwargs):
