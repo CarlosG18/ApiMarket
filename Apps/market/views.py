@@ -1,9 +1,12 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from .serializers import BuyListSerializer, BuySerializer, ProductSerializer, StockSerializer, CategorySerializer
 from .models import Buy, BuyList, Product, Stock, Category
+from Apps.users.models import Client
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 
 class BuyViewSet(viewsets.ModelViewSet):
     """
@@ -12,12 +15,59 @@ class BuyViewSet(viewsets.ModelViewSet):
     queryset = Buy.objects.all()
     serializer_class = BuySerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        product = Product.objects.get(id=request.data['product'])
+
+        if serializer.is_valid():
+            price = product.price * request.data['amount']
+            serializer.save(price=price)
+            # atualizar o estoque
+            stock = Stock.objects.get(product=product)
+            stock.amount_current -= request.data['amount']
+            stock.save()
+            # atualizar a buylist
+            buylist = BuyList.objects.get(id=request.data['buylist'])
+            buylist.amount_total += price
+            buylist.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class BuyListViewSet(viewsets.ModelViewSet):
     """
     
     """
-    queryset = BuyList.objects.all()
+    queryset = BuyList.objects.all().order_by('id')
     serializer_class = BuyListSerializer
+    filter_backends = (DjangoFilterBackend,filters.OrderingFilter)
+    ordering_fields = ('client', 'data_buy')
+
+    def list_products(self, request, *args, **kwargs):
+        buylist = BuyList.objects.get(id=kwargs['id'])
+        buys = Buy.objects.filter(buylist=buylist)
+        products = [buy.product for buy in buys]
+
+        data_response = {}
+        for index, buy in enumerate(set(buys)):
+            data_response[f'produto_{index}'] = {
+                'produto': buy.product.name,
+                'preço_produto': buy.product.price,
+                'preço_total': buy.price,
+                'quantidade': buy.amount,
+
+            }       
+        return Response(data_response, status=status.HTTP_200_OK)
+    
+    def list_buylist_client(self, request, *args, **kwargs):
+        try:
+            client = get_object_or_404(Client, id=kwargs['id'])
+        except:
+            return Response({'message': 'client with specified id does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        buylist = BuyList.objects.filter(client=client)
+        serializer = self.get_serializer(buylist, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ProductViewSet(viewsets.ModelViewSet):
     """
