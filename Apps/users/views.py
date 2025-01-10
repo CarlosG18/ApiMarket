@@ -5,6 +5,7 @@ from .permissions import IsRoleUser
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
 
 # Create your views here.
 class AdminViewSet(viewsets.ModelViewSet):
@@ -78,7 +79,8 @@ class PointViewSet(viewsets.ModelViewSet):
     permission_classes = [IsRoleUser]
     lookup_field = 'id'
 
-    def list_batidas_of_point(self, request, *args, **kwargs):
+    @action(detail=True, methods=['get'])
+    def batida(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             batidas = Batida.objects.filter(point=instance)

@@ -48,7 +48,8 @@ class BuyListViewSet(viewsets.ModelViewSet):
     required_roles = ['operator', 'Admin']
     permission_classes = [IsRoleUser]
 
-    def list_products(self, request, *args, **kwargs):
+    @action(detail=True, methods=['get'])
+    def products(self, request, *args, **kwargs):
         buylist = BuyList.objects.get(id=kwargs['id'])
         buys = Buy.objects.filter(buylist=buylist)
         products = [buy.product for buy in buys]
@@ -138,7 +139,8 @@ class StockViewSet(viewsets.ModelViewSet):
         stock.save()
         return Response({'message': 'Estoque atualizado com sucesso!'}, status=status.HTTP_200_OK)
     
-    def get_info_stock(self, request, *args, **kwargs):
+    @action(detail=False, methods=['get'])
+    def info(self, request, *args, **kwargs):
         """
             funcao para pegar as informacoes gerais do estoque
         """
