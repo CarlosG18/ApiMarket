@@ -6,6 +6,8 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
+from Apps.market.models import BuyList
+from Apps.market.serializers import BuyListSerializer
 
 # Create your views here.
 class AdminViewSet(viewsets.ModelViewSet):
@@ -24,6 +26,17 @@ class ClientViewSet(viewsets.ModelViewSet):
     required_roles = ['Admin', 'Gerente','Operator']
     permission_classes = [IsRoleUser]
 
+    @action(detail=True, methods=['get'])
+    def buylists(self, request, *args, **kwargs):
+        try:
+            client = self.get_object()
+        except:
+            return Response({'message': 'client with specified id does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        buylist = BuyList.objects.filter(client=client)
+        serializer = BuyListSerializer(buylist, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class EmployeeViewSet(viewsets.ModelViewSet):
     """
     
@@ -32,6 +45,16 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeSerializer
     required_roles = ['Admin']
     permission_classes = [IsRoleUser]
+
+    @action(detail=True, methods=['get'])
+    def point(self, request, *args, **kwargs):
+        try:
+            employee = self.get_object()
+            points = Point.objects.filter(employee_id=employee.id)
+            serializer_points = PointSerializer(points, many=True)
+            return Response(serializer_points.data, status=status.HTTP_200_OK) 
+        except:
+            return Response(serializer_points.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PayMethodViewSet(viewsets.ModelViewSet):
     """
