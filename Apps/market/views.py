@@ -71,11 +71,23 @@ class ProductViewSet(viewsets.ModelViewSet):
     """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    required_roles = ['Provider', 'Admin']
+    required_roles = ['Provider', 'Admin', 'Gerente']
     permission_classes = [IsRoleUser]
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+    @action(detail=True, methods=['get'])
+    def stocks(self, request, *args, **kwargs):
+        """
+            funcao para listar o estoque de um produto
+        """
+        product = self.get_object()
+        queryset = Stock.objects.filter(product=product)
+        serializer = StockSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
 
 class StockViewSet(viewsets.ModelViewSet):
     """
@@ -86,16 +98,7 @@ class StockViewSet(viewsets.ModelViewSet):
     required_roles = ['Gerente', 'Admin']
     permission_classes = [IsRoleUser]
     http_method_names = ['get', 'post', 'delete', 'patch']
-
-    def list_estoque_product(self, request, *args, **kwargs):
-        """
-            funcao para listar o estoque de um produto
-        """
-        product = Product.objects.get(id=kwargs['id'])
-        queryset = Stock.objects.filter(product=product)
-        serializer = StockSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+       
     def list_estoque_categories(self, request, *args, **kwargs):
         """
             funcao para listar o estoque de uma categoria
