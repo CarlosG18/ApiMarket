@@ -40,5 +40,5 @@ class BuySerializer(serializers.ModelSerializer):
 class BuyListSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyList
-        fields = ['id', 'client', 'day_buy', 'operator']
+        fields = ['id', 'client', 'day_buy', 'amount_total', 'operator','closed','discount']
         
