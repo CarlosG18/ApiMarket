@@ -66,7 +66,8 @@ class BuyList(models.Model):
     day_buy = models.DateTimeField(default=now)
     operator = models.ForeignKey(Operator, on_delete=models.CASCADE)
     amount_total = models.IntegerField(default=0)
-    discount = models.IntegerField(default=0)# value in % of amount total
+    discount = models.FloatField(default=0.0)# value in % of amount total
+    closed = models.BooleanField(default=False)
     
     def __str__(self):
         return super().__str__()

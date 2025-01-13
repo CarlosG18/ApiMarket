@@ -8,6 +8,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from Apps.users.permissions import IsRoleUser
+from Apps.users.models import Operator, Client
 
 class BuyViewSet(viewsets.ModelViewSet):
     """
@@ -21,19 +22,22 @@ class BuyViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         product = Product.objects.get(id=request.data['product'])
-
+        buylist = BuyList.objects.get(id=request.data['buylist'])
         if serializer.is_valid():
-            price = product.price * request.data['amount']
-            serializer.save(price=price)
-            # atualizar o estoque
-            stock = Stock.objects.get(product=product)
-            stock.amount_current -= request.data['amount']
-            stock.save()
-            # atualizar a buylist
-            buylist = BuyList.objects.get(id=request.data['buylist'])
-            buylist.amount_total += price
-            buylist.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            if not buylist.closed:
+                price = product.price * request.data['amount']
+                serializer.save(price=price)
+                # atualizar o estoque
+                stock = Stock.objects.get(product=product)
+                stock.amount_current -= request.data['amount']
+                stock.save()
+                # atualizar a buylist
+                buylist.amount_total += price
+                buylist.discount += 0.01
+                buylist.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"messagem": "A buylist já foi fechada, para adicionar um novo produto abra a buylist"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -50,7 +54,7 @@ class BuyListViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def products(self, request, *args, **kwargs):
-        buylist = BuyList.objects.get(id=kwargs['id'])
+        buylist = self.get_object()
         buys = Buy.objects.filter(buylist=buylist)
         products = [buy.product for buy in buys]
 
@@ -64,7 +68,30 @@ class BuyListViewSet(viewsets.ModelViewSet):
 
             }       
         return Response(data_response, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['get'])
+    def closed(self, request, *args, **kwargs):
+        buylist = self.get_object()
+        buylist.closed = True
+        #calculando o preço total da compra
+        preco_compra_total = buylist.amount_total
+        preco_final = preco_compra_total - (preco_compra_total * buylist.discount)
+        buylist.save()
+        serializer = self.get_serializer(buylist)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        operator = get_object_or_404(Operator, id=instance.operator.id)
+        client = get_object_or_404(Client, id=instance.client.id)
+
+        serializer = self.get_serializer(instance, data=request.data, partial=True, context={'operator': operator, 'client': client})
         
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
 class ProductViewSet(viewsets.ModelViewSet):
     """
     
