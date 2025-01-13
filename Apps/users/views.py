@@ -43,7 +43,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     """
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
-    required_roles = ['Admin','Gerente']
+    required_roles = ['Admin']
     permission_classes = [IsRoleUser]
 
     @action(detail=True, methods=['get'])
