@@ -64,17 +64,7 @@ class BuyListViewSet(viewsets.ModelViewSet):
 
             }       
         return Response(data_response, status=status.HTTP_200_OK)
-    
-    def list_buylist_client(self, request, *args, **kwargs):
-        try:
-            client = get_object_or_404(Client, id=kwargs['id'])
-        except:
-            return Response({'message': 'client with specified id does not exist'}, status=status.HTTP_400_BAD_REQUEST)
         
-        buylist = BuyList.objects.filter(client=client)
-        serializer = self.get_serializer(buylist, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
 class ProductViewSet(viewsets.ModelViewSet):
     """
     
