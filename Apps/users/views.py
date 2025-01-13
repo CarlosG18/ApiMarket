@@ -43,8 +43,18 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     """
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
-    required_roles = ['Admin']
+    required_roles = ['Admin','Gerente']
     permission_classes = [IsRoleUser]
+
+    @action(detail=True, methods=['get'])
+    def point(self, request, *args, **kwargs):
+        try:
+            employee = self.get_object()
+            points = Point.objects.filter(employee_id=employee.id)
+            serializer_points = PointSerializer(points, many=True)
+            return Response(serializer_points.data, status=status.HTTP_200_OK) 
+        except:
+            return Response(serializer_points.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PayMethodViewSet(viewsets.ModelViewSet):
     """
