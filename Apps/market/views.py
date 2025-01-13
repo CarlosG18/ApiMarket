@@ -86,8 +86,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = Stock.objects.filter(product=product)
         serializer = StockSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-
 
 class StockViewSet(viewsets.ModelViewSet):
     """
@@ -98,15 +96,6 @@ class StockViewSet(viewsets.ModelViewSet):
     required_roles = ['Gerente', 'Admin']
     permission_classes = [IsRoleUser]
     http_method_names = ['get', 'post', 'delete', 'patch']
-       
-    def list_estoque_categories(self, request, *args, **kwargs):
-        """
-            funcao para listar o estoque de uma categoria
-        """
-        category = Category.objects.get(id=kwargs['id'])
-        queryset = Stock.objects.filter(product__category=category)
-        serializer = StockSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
     
     def destroy(self, request, *args, **kwargs):
         """
@@ -156,5 +145,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    required_roles = ['Provider', 'Admin']
+    required_roles = ['Provider', 'Admin', 'Gerente']
     permission_classes = [IsRoleUser]
+
+    @action(detail=True, methods=['get'])
+    def stocks(self, request, *args, **kwargs):
+        """
+            funcao para listar o estoque de uma categoria
+        """
+        category = self.get_object()
+        queryset = Stock.objects.filter(product__category=category)
+        serializer = StockSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
