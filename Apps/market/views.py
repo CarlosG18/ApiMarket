@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from Apps.users.permissions import IsRoleUser
 from Apps.users.models import Operator, Client
+from .tasks import alarm_stock
 
 class BuyViewSet(viewsets.ModelViewSet):
     """
@@ -30,6 +31,8 @@ class BuyViewSet(viewsets.ModelViewSet):
                 # atualizar o estoque
                 stock = Stock.objects.get(product=product)
                 stock.amount_current -= request.data['amount']
+                if stock.amount_current - stock.amount_min < 10:
+                    alarm_stock(stock, "inf")
                 stock.save()
                 # atualizar a buylist
                 buylist.amount_total += price
@@ -120,7 +123,7 @@ class StockViewSet(viewsets.ModelViewSet):
     """
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
-    required_roles = ['Gerente', 'Admin']
+    required_roles = ['Gerente', 'Admin','operator']
     permission_classes = [IsRoleUser]
     http_method_names = ['get', 'post', 'delete', 'patch']
     
