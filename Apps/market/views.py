@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from Apps.users.permissions import IsRoleUser
 from Apps.users.models import Operator, Client
+from rest_framework.permissions import AllowAny
 
 class BuyViewSet(viewsets.ModelViewSet):
     """
@@ -173,7 +174,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     required_roles = ['Provider', 'Admin', 'Gerente']
-    permission_classes = [IsRoleUser]
+    permission_classes = [AllowAny]
 
     @action(detail=True, methods=['get'])
     def stocks(self, request, *args, **kwargs):
