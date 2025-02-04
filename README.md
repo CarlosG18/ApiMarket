@@ -72,9 +72,17 @@ python manage.py runserver
 ### ➡️ **Usando Docker**
 Se preferir usar o Docker para rodar a aplicação, pode construir e iniciar os containers:
 
+**Buildando a imagem**:
 ```bash
-docker-compose up --build
+docker image build . -t <crie um nome para a imagem>
 ```
+
+**Criando o container**:
+```bash
+docker run -p 8000:8000 <nome que voce deu para a imagem>
+```
+
+com isso a api vai esta acessivel em **127.0.0.1:8000**.
 
 ## 🗎 **Endpoints da API e Documentação**
 
