@@ -27,10 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['127.0.0.1','apimarket.pythonanywhere.com']
 
 # Application definition
 
@@ -157,11 +156,11 @@ SPECTACULAR_SETTINGS = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": False,
-    "ALGORITHM": "HS256",
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(config('ACCESS_TOKEN_LIFETIME'))),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(config('REFRESH_TOKEN_LIFETIME'))),
+    "ROTATE_REFRESH_TOKENS": config('ROTATE_REFRESH_TOKENS'),
+    "BLACKLIST_AFTER_ROTATION": config('BLACKLIST_AFTER_ROTATION'),
+    "UPDATE_LAST_LOGIN": config('UPDATE_LAST_LOGIN'),
+    "ALGORITHM": config('ALGORITHM'),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
