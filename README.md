@@ -86,5 +86,5 @@ com isso a api vai esta acessivel em **127.0.0.1:8000**.
 
 ## 🗎 **Endpoints da API e Documentação**
 
-A documentação da API pode ser acessada atraves da url `127.0.0.1:8000/docs`, onde conterá todos os endpoints e todas as informações nescessarias para se fazer a requisição da forma correta.
+A documentação da API pode ser acessada atraves da url `https://apimarket.pythonanywhere.com/docs`, onde conterá todos os endpoints e todas as informações nescessarias para se fazer a requisição da forma correta.
 
